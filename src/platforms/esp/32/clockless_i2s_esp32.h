@@ -499,7 +499,7 @@ protected:
         i2s->sample_rate_conf.tx_bck_div_num = 1;
         i2s->clkm_conf.val = 0;
 #ifdef CONFIG_IDF_TARGET_ESP32S2
-        i2s->clkm_conf.clk_sel = 0;
+        i2s->clkm_conf.clk_sel = 2;
 #else
         i2s->clkm_conf.clka_en = 0;
 #endif
