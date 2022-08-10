@@ -132,6 +132,11 @@ __attribute__ ((always_inline)) inline static uint32_t __clock_cycles() {
 #define I2S_DEVICE 0
 #endif
 
+// -- Check if a nonexistant I2S device is specified
+#if I2S_DEVICE >= SOC_I2S_NUM
+#error "Nonexistant I2S_DEVICE selected."
+#endif
+
 // -- Max number of controllers we can support
 #ifndef FASTLED_I2S_MAX_CONTROLLERS
 #define FASTLED_I2S_MAX_CONTROLLERS 24
@@ -446,9 +451,16 @@ protected:
         // -- Construct the bit patterns for ones and zeros
         initBitPatterns();
         
-        // -- Choose whether to use I2S device 0 or device 1
+        // -- If there is only one I2S device available, use that
+        //    Otherwise, choose whether to use I2S device 0 or device 1
         //    Set up the various device-specific parameters
         int interruptSource;
+#if SOC_I2S_NUM == 1
+        i2s = &I2S0;
+        periph_module_enable(PERIPH_I2S0_MODULE);
+        interruptSource = ETS_I2S0_INTR_SOURCE;
+        i2s_base_pin_index = I2S0O_DATA_OUT0_IDX;
+#else
         if (I2S_DEVICE == 0) {
             i2s = &I2S0;
             periph_module_enable(PERIPH_I2S0_MODULE);
@@ -460,6 +472,7 @@ protected:
             interruptSource = ETS_I2S1_INTR_SOURCE;
             i2s_base_pin_index = I2S1O_DATA_OUT0_IDX;
         }
+#endif
         
         // -- Reset everything
         i2sReset();
