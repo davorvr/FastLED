@@ -498,7 +498,11 @@ protected:
         i2s->sample_rate_conf.tx_bits_mod = 32; // Number of parallel bits/pins
         i2s->sample_rate_conf.tx_bck_div_num = 1;
         i2s->clkm_conf.val = 0;
+#ifdef CONFIG_IDF_TARGET_ESP32S2
+        i2s->clkm_conf.clk_sel = 0;
+#else
         i2s->clkm_conf.clka_en = 0;
+#endif
         
         // -- Data clock is computed as Base/(div_num + (div_b/div_a))
         //    Base is 80Mhz, so 80/(10 + 0/1) = 8Mhz
